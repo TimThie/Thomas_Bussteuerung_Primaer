@@ -1,9 +1,21 @@
-#pragma once
+#ifndef DRVSLEEPCTL_H
+#define DRVSLEEPCTL_H
 #include <Arduino.h>
 #include <avr/sleep.h>
-#include "pinAssignment.h"
-#include <avr/interrupt.h>
 
-volatile bool pinInterrupt = false;
-void gotoSleepMS(uint32_t);
-void setupSleepTask();
+class DrvSleepCtrl
+{
+private:
+    uint8_t wakePin;
+
+    static DrvSleepCtrl *instance;
+    static void sleepISR();
+
+public:
+    DrvSleepCtrl(uint8_t wakeUpGPIO);
+    ~DrvSleepCtrl();
+
+    void gotoSleep();
+};
+
+#endif
