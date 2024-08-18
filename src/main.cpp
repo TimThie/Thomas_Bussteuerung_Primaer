@@ -1,42 +1,24 @@
 #include <Arduino.h>
 
+// #include "./../components/drvSleepCtl/include/drvSleepCtl.h"
 #include "pinAssignment.h"
-#include "drvSleepCtl.h"
+#include "drvLED.h"
+// #include "drvSleepCtl.h"
 
-int myFunction(int, int);
 uint32_t led_timer;
-uint32_t sleep_timer;
-bool ledState = LOW;
-DrvSleepCtrl SleepCtrl(WAKEUP_PIN);
-
+DrvLED testLED(LED_PIN);
 void setup()
 {
   Serial.begin(9600);
   led_timer = millis();
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(WAKEUP_PIN, INPUT_PULLUP);
-  sleep_timer = millis();
 }
 
 void loop()
 {
-  if (millis() - led_timer > 1000)
+  if (millis() - led_timer > 2500)
   {
     led_timer = millis();
-    digitalWrite(LED_PIN, ledState);
-    ledState = !ledState;
-    Serial.println("LED Toggled");
-
-    if (millis() - sleep_timer > 10000)
-    {
-      Serial.println("Good Night");
-      SleepCtrl.gotoSleep(); /* GOTO SLEEP WHEN READY NOT FINISHED */
-      sleep_timer = millis();
-    }
+    testLED.toggle();
+    // gotoSleepMS(); /* GOTO SLEEP WHEN READY NOT FINISHED */
   }
-}
-
-int myFunction(int x, int y)
-{
-  return x + y;
 }
