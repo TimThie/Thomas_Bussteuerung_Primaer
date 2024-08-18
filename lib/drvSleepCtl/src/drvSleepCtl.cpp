@@ -3,6 +3,7 @@ DrvSleepCtrl *DrvSleepCtrl::instance = nullptr;
 DrvSleepCtrl::DrvSleepCtrl(uint8_t wakeUpGPIO)
 {
     this->wakePin = wakeUpGPIO;
+    pinMode(this->wakePin, INPUT_PULLUP);
     instance = this;
 }
 
