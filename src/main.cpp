@@ -4,8 +4,8 @@
 #include "drvLED.h"
 #include "drvSleepCtl.h"
 
-#define SLEEP_TIMER_MS 5000
-#define LED_TOGGLE_TIME_MS 250
+#define SLEEP_TIMER_MS 60000
+#define LED_TOGGLE_TIME_MS 2500
 
 uint32_t led_timer;
 uint32_t sleep_timer;
