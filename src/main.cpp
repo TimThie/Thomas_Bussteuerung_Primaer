@@ -1,42 +1,50 @@
 #include <Arduino.h>
 
 #include "pinAssignment.h"
+#include "drvLED.h"
 #include "drvSleepCtl.h"
 
-int myFunction(int, int);
+#define SLEEP_TIMER_MS 60000
+#define LED_TOGGLE_TIME_MS 2500
+
 uint32_t led_timer;
 uint32_t sleep_timer;
-bool ledState = LOW;
-DrvSleepCtrl SleepCtrl(WAKEUP_PIN);
+
+DrvLED testLED(LED_PIN);
+DrvSleepCtrl sleepCtrl(WAKEUP_PIN);
 
 void setup()
 {
   Serial.begin(9600);
+
+  pinMode(LIGHTSWITCH1_PIN, INPUT);
+  pinMode(LIGHTSWITCH2_PIN, INPUT);
+
   led_timer = millis();
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(WAKEUP_PIN, INPUT_PULLUP);
   sleep_timer = millis();
 }
 
 void loop()
 {
-  if (millis() - led_timer > 1000)
+  uint8_t read1 = digitalRead(LIGHTSWITCH1_PIN);
+  uint8_t read2 = digitalRead(LIGHTSWITCH2_PIN);
+  Serial.println(read1);
+  Serial.println(read2);
+  if (read1 == HIGH)
   {
-    led_timer = millis();
-    digitalWrite(LED_PIN, ledState);
-    ledState = !ledState;
-    Serial.println("LED Toggled");
-
-    if (millis() - sleep_timer > 10000)
-    {
-      Serial.println("Good Night");
-      SleepCtrl.gotoSleep(); /* GOTO SLEEP WHEN READY NOT FINISHED */
-      sleep_timer = millis();
-    }
+    Serial.println("Triggered NO DIM");
+    testLED.setMaxBrightness(255);
+    testLED.toggle();
   }
-}
-
-int myFunction(int x, int y)
-{
-  return x + y;
+  if (read2 == HIGH)
+  {
+    Serial.println("Triggered DIM");
+    testLED.setMaxBrightness(10);
+    testLED.toggle();
+  }
+  if (millis() - sleep_timer > SLEEP_TIMER_MS)
+  {
+    sleepCtrl.gotoSleep();
+    sleep_timer = millis();
+  }
 }

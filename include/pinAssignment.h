@@ -1,5 +1,9 @@
-#pragma once
+#ifndef PINASSIGNMENT_H
+#define PINASSIGNMENT_H
 
-#define LED_PIN 4
-#define LIGHTSWITCH_PIN 5
+#define LED_PIN 6
+#define LIGHTSWITCH1_PIN 5
+#define LIGHTSWITCH2_PIN 4
 #define WAKEUP_PIN 2
+
+#endif
