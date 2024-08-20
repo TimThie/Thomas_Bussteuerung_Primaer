@@ -113,7 +113,7 @@ void DrvLED::off()
 
 void DrvLED::toggle()
 {
-    if (!(this->ledState > LED_ON) && (millis() - this->lastToggleMillis > DEBOUNCE_TOGGLE_TIME_MS)) /*Not Rising or Falling*/
+    if (!(this->ledState > LED_ON))
     {
         if (this->ledState == LED_ON)
         {
