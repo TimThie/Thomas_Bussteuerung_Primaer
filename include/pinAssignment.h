@@ -3,7 +3,7 @@
 
 #define LED_PIN 6
 #define LIGHTSWITCH1_PIN 5
-#define LIGHTSWITCH2_PIN 4
+#define HAUPTLICHT_PIN 4
 #define WAKEUP_PIN 2
 
 #endif
