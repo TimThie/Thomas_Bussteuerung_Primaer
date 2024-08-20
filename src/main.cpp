@@ -5,8 +5,7 @@
 #include "drvSleepCtl.h"
 #include "drvButton.h"
 
-#define SLEEP_TIMER_MS 60000
-#define LED_TOGGLE_TIME_MS 2500
+#define SLEEP_TIMER_MS 5000
 
 uint32_t led_timer;
 uint32_t sleep_timer;
@@ -19,29 +18,23 @@ void setup()
 {
   Serial.begin(9600);
 
-  // pinMode(LIGHTSWITCH1_PIN, INPUT);
-
+  pinMode(LED_BUILTIN, OUTPUT);
   led_timer = millis();
   sleep_timer = millis();
 }
 
 void loop()
 {
-  // uint8_t read2 = digitalRead(LIGHTSWITCH1_PIN);
   if (hauptlicht.wasClicked())
   {
     Serial.println("Triggered NO DIM");
     testLED.setMaxBrightness(255);
     testLED.toggle();
   }
-  // if (read2 == HIGH)
-  // {
-  //   Serial.println("Triggered DIM");
-  //   testLED.setMaxBrightness(10);
-  //   testLED.toggle();
-  // }
+  digitalWrite(LED_BUILTIN, HIGH);
   if (millis() - sleep_timer > SLEEP_TIMER_MS)
   {
+    digitalWrite(LED_BUILTIN, LOW);
     sleepCtrl.gotoSleep();
     sleep_timer = millis();
   }

@@ -2,7 +2,6 @@
 #define PINASSIGNMENT_H
 
 #define LED_PIN 6
-#define LIGHTSWITCH1_PIN 5
 #define HAUPTLICHT_PIN 4
 #define WAKEUP_PIN 2
 
