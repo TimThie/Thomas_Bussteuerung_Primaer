@@ -11,6 +11,8 @@ DrvLED mainLight(MAINLIGHT_PIN);
 DrvButton trunkLidSwitch(TRUNK_LID_LIGHT_BUTTON_PIN, LOW);
 DrvLED trunkLidLight(TRUNK_LID_LIGHT_PIN);
 
+uint32_t currentMainSwitchMillis;
+
 void program()
 {
     sleepTask();
@@ -36,18 +38,44 @@ void sleepTask()
 
 void mainLightTask()
 {
-    if (mainSwitch.wasClicked())
+    mainSwitch.updateButton();
+    if (mainSwitch.wasReleased())
     {
-        mainLight.setMaxBrightness(255);
-        mainLight.toggle();
+        if (mainSwitch.wasPressedLong())
+        {
+            mainLight.setMaxBrightness(5);
+            mainLight.toggle();
+        }
+        else
+        {
+            mainLight.setMaxBrightness(255);
+            mainLight.toggle();
+        }
     }
-    else if (mainSwitch.wasClickedSec())
+    if (mainLight.isOn())
     {
-        mainLight.setMaxBrightness(50);
-        mainLight.toggle();
+        sleepCtrl.resetSleepTimer();
     }
 }
 
 void trunkLidTask()
 {
+    trunkLidSwitch.updateButton();
+    if (trunkLidSwitch.wasReleased())
+    {
+        if (trunkLidSwitch.wasPressedLong())
+        {
+            trunkLidLight.setMaxBrightness(5);
+            trunkLidLight.toggle();
+        }
+        else
+        {
+            trunkLidLight.setMaxBrightness(255);
+            trunkLidLight.toggle();
+        }
+    }
+    if (trunkLidLight.isOn())
+    {
+        sleepCtrl.resetSleepTimer();
+    }
 }
