@@ -3,7 +3,9 @@ DrvSleepCtrl *DrvSleepCtrl::instance = nullptr;
 DrvSleepCtrl::DrvSleepCtrl(uint8_t wakeUpGPIO)
 {
     this->wakePin = wakeUpGPIO;
+    this->_sleepTimer = millis();
     pinMode(this->wakePin, INPUT_PULLUP);
+    pinMode(LED_BUILTIN, OUTPUT);
     instance = this;
 }
 
@@ -68,6 +70,16 @@ void DrvSleepCtrl::gotoSleep()
 
     // Re-enable ADC if it was previously running
     ADCSRA = prevADCSRA;
+}
+
+uint32_t DrvSleepCtrl::getSleepTimer()
+{
+    return this->_sleepTimer;
+}
+
+void DrvSleepCtrl::resetSleepTimer()
+{
+    this->_sleepTimer = millis();
 }
 
 // When wakePin is brought LOW this interrupt is triggered FIRST (even in PWR_DOWN sleep)

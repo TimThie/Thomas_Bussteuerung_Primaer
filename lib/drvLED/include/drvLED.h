@@ -34,6 +34,7 @@ public:
     void off();
     void toggle();
     void setMaxBrightness(uint8_t maxBrightness);
+    bool isOn();
 
 private:
     enum ledState

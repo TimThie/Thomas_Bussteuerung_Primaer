@@ -23,7 +23,7 @@ void DrvLED::on()
     switch (this->config.fadeInMode)
     {
     case noFading:
-        digitalWrite(this->m_pin, HIGH);
+        analogWrite(this->m_pin, this->config.maxBrightnessLevel);
         break;
     case linear:
         this->ledState = LED_RISING;
@@ -44,7 +44,7 @@ void DrvLED::on()
                         Serial.print(" -> ");
                         Serial.println((uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (ledBrightness + 1)));
                         */
-            if (millis() - fadeTimer >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1))) // Hier funzt was noch nicht !!!
+            if (millis() - fadeTimer >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1)))
             {
                 this->brightness++;
                 analogWrite(this->m_pin, this->brightness);
@@ -130,4 +130,13 @@ void DrvLED::toggle()
 void DrvLED::setMaxBrightness(uint8_t maxBrightness)
 {
     this->config.maxBrightnessLevel = maxBrightness;
+}
+
+bool DrvLED::isOn()
+{
+    if (this->ledState == LED_ON)
+    {
+        return true;
+    }
+    return false;
 }
