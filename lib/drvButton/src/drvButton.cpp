@@ -1,72 +1,53 @@
 #include "drvButton.h"
 
 DrvButton::DrvButton(uint8_t gpio, bool activeState)
-    : _pin(gpio), _activeState(activeState), _lastState(!activeState),
-      _isPressed(false), _lastDebounceTime(0), _pressedTime(0) { this->init(); }
-
-void DrvButton::init()
 {
-    pinMode(_pin, INPUT);
-}
+    this->_pin = gpio;
+    this->_currentStateMillis = millis();
+    this->_activeState = LOW;
+    this->_button = Bounce2::Button();
 
-bool DrvButton::debounce()
-{
-    bool currentState = digitalRead(_pin) == _activeState;
-    if (currentState != _lastState)
+    if (this->_activeState == LOW)
     {
-        _lastDebounceTime = millis();
+        this->_button.attach(this->_pin, INPUT_PULLUP);
     }
-
-    if ((millis() - _lastDebounceTime) > DEBOUNCE_TIME)
+    else
     {
-        if (currentState != _isPressed)
-        {
-            _isPressed = currentState;
-            if (_isPressed)
-            {
-                _pressedTime = millis();
-            }
-        }
+        this->_button.attach(this->_pin, INPUT);
     }
-
-    _lastState = currentState;
-    return _isPressed;
+    this->_button.interval(DEBOUNCE_TIME);
+    this->_button.setPressedState(LOW);
 }
 
 bool DrvButton::isPressed()
 {
-    return debounce();
+    return this->_button.isPressed();
 }
 
-bool DrvButton::wasClicked()
+bool DrvButton::wasPressed()
 {
-    if (!debounce() && _pressedTime != 0)
+    return this->_button.pressed();
+}
+
+bool DrvButton::wasReleased()
+{
+    return this->_button.released();
+}
+
+bool DrvButton::wasPressedLong()
+{
+    if (millis() - this->_currentStateMillis > PRESS_LONG_DURATION_MS)
     {
-        uint32_t duration = millis() - _pressedTime;
-        _pressedTime = 0;
-        return (duration > DEBOUNCE_TIME && duration < 1000);
+        return true;
     }
     return false;
 }
 
-bool DrvButton::wasClickedSec()
+void DrvButton::updateButton()
 {
-    if (!debounce() && _pressedTime != 0)
+    if (!this->_button.isPressed())
     {
-        uint32_t duration = millis() - _pressedTime;
-        _pressedTime = 0;
-        return (duration >= 1000);
+        _currentStateMillis = millis();
     }
-    return false;
-}
-
-bool DrvButton::wasClickedTime(uint32_t time)
-{
-    if (!debounce() && _pressedTime != 0)
-    {
-        uint32_t duration = millis() - _pressedTime;
-        _pressedTime = 0;
-        return (duration >= time);
-    }
-    return false;
+    this->_button.update();
 }
