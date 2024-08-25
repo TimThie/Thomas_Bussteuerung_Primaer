@@ -3,6 +3,7 @@ DrvSleepCtrl *DrvSleepCtrl::instance = nullptr;
 DrvSleepCtrl::DrvSleepCtrl(uint8_t wakeUpGPIO)
 {
     this->wakePin = wakeUpGPIO;
+    this->_isReadyToSleep = false;
     this->_sleepTimer = millis();
     pinMode(this->wakePin, INPUT_PULLUP);
     pinMode(LED_BUILTIN, OUTPUT);
@@ -52,7 +53,6 @@ void DrvSleepCtrl::gotoSleep()
     attachInterrupt(digitalPinToInterrupt(this->wakePin), sleepISR, LOW);
 
     // Send a message just to show we are about to sleep
-    // Serial.println("Good night!");
     Serial.flush();
 
     // Allow interrupts now
@@ -66,10 +66,27 @@ void DrvSleepCtrl::gotoSleep()
     // --------------------------------------------------------
 
     // Wakes up at this point when wakePin is brought LOW - interrupt routine is run first
-    // Serial.println("I'm awake!");
 
     // Re-enable ADC if it was previously running
     ADCSRA = prevADCSRA;
+
+    // Reset sleep Timer
+    this->_isReadyToSleep = false;
+    this->resetSleepTimer();
+}
+
+void DrvSleepCtrl::setReadyForSleep(bool isReady)
+{
+    if (this->_isReadyToSleep != isReady)
+    {
+        this->_isReadyToSleep = !this->_isReadyToSleep;
+        this->resetSleepTimer();
+    }
+}
+
+bool DrvSleepCtrl::isReadyForSleep()
+{
+    return this->_isReadyToSleep;
 }
 
 uint32_t DrvSleepCtrl::getSleepTimer()
@@ -98,8 +115,7 @@ void DrvSleepCtrl::resetSleepTimer()
 // }
 void DrvSleepCtrl::sleepISR()
 {
-    Serial.println("Wake Up");
-    // Prevent sleep mode, so we don't enter it again, except deliberately, by code
+    //  Prevent sleep mode, so we don't enter it again, except deliberately, by code
     sleep_disable();
     // Detach the interrupt that brought us out of sleep
     detachInterrupt(digitalPinToInterrupt(instance->wakePin));

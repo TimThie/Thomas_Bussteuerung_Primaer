@@ -8,5 +8,6 @@
 #define TRUNK_LID_LIGHT_BUTTON_PIN 7
 
 #define WAKEUP_PIN 2
+#define SLEEPLED_PIN 10
 
 #endif

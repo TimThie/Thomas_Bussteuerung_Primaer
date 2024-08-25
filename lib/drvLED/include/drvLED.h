@@ -5,8 +5,6 @@
 #define DEFAULT_FADE_IN_TIME 1000
 #define DEFAULT_FADE_OUT_TIME 1000
 
-#define DEBOUNCE_TOGGLE_TIME_MS 500
-
 #define MAX_BRIGHTNESS_LEVEL 255
 
 class DrvLED
@@ -35,6 +33,7 @@ public:
     void toggle();
     void setMaxBrightness(uint8_t maxBrightness);
     bool isOn();
+    bool isOff();
 
 private:
     enum ledState

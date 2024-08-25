@@ -30,20 +30,6 @@ void DrvLED::on()
 
         while (this->brightness < this->config.maxBrightnessLevel)
         {
-            /*            Serial.print(millis());
-                        Serial.print(" - ");
-                        Serial.print(fadeTimer);
-                        Serial.print(" >= ");
-                        Serial.print(fadeTimer);
-                        Serial.print(" + ");
-                        Serial.print(this->config.fadeInTime);
-                        Serial.print(" / ");
-                        Serial.print(MAX_BRIGHTNESS_LEVEL);
-                        Serial.print(" * ");
-                        Serial.print(ledBrightness + 1);
-                        Serial.print(" -> ");
-                        Serial.println((uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (ledBrightness + 1)));
-                        */
             if (millis() - fadeTimer >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1)))
             {
                 this->brightness++;
@@ -70,27 +56,13 @@ void DrvLED::off()
     switch (this->config.fadeOutMode)
     {
     case noFading:
-        digitalWrite(this->m_pin, LOW);
+        analogWrite(this->m_pin, LOW);
         break;
     case linear:
         this->ledState = LED_FALLING;
 
         while (this->brightness > LOW)
         {
-            /*            Serial.print(millis());
-                        Serial.print(" - ");
-                        Serial.print(fadeTimer);
-                        Serial.print(" >= ");
-                        Serial.print(fadeTimer);
-                        Serial.print(" + ");
-                        Serial.print(this->config.fadeInTime);
-                        Serial.print(" / ");
-                        Serial.print(MAX_BRIGHTNESS_LEVEL);
-                        Serial.print(" * ");
-                        Serial.print(fadeOutCounter + 1);
-                        Serial.print(" -> ");
-                        Serial.println((uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (fadeOutCounter + 1)));
-                        */
             if (millis() - fadeTimer >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * (fadeOutCounter + 1))) // Hier funzt was noch nicht !!!
             {
                 this->brightness--;
@@ -134,7 +106,16 @@ void DrvLED::setMaxBrightness(uint8_t maxBrightness)
 
 bool DrvLED::isOn()
 {
-    if (this->ledState == LED_ON)
+    if (this->ledState > LED_OFF)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool DrvLED::isOff()
+{
+    if (this->ledState == LED_OFF)
     {
         return true;
     }
