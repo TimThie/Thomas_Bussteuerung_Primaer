@@ -22,17 +22,23 @@ void program()
 
 void sleepTask()
 {
-    digitalWrite(LED_BUILTIN, HIGH);
-    if (digitalRead(WAKEUP_PIN) == LOW)
+    digitalWrite(SLEEPLED_PIN, HIGH);
+    bool sleepCondition = 0;
+    sleepCondition |= !mainLight.isOff();
+    sleepCondition |= !trunkLidLight.isOff();
+    if (sleepCondition == 0)
     {
-        sleepCtrl.resetSleepTimer();
+        sleepCtrl.setReadyForSleep(true);
+    }
+    else
+    {
+        sleepCtrl.setReadyForSleep(false);
     }
 
-    if (millis() - sleepCtrl.getSleepTimer() > SLEEP_TIMER_MS)
+    if (sleepCtrl.isReadyForSleep() && millis() - sleepCtrl.getSleepTimer() > SLEEP_TIMER_MS)
     {
-        digitalWrite(LED_BUILTIN, LOW);
+        digitalWrite(SLEEPLED_PIN, LOW);
         sleepCtrl.gotoSleep();
-        sleepCtrl.resetSleepTimer();
     }
 }
 
@@ -52,10 +58,6 @@ void mainLightTask()
             mainLight.toggle();
         }
     }
-    if (mainLight.isOn())
-    {
-        sleepCtrl.resetSleepTimer();
-    }
 }
 
 void trunkLidTask()
@@ -73,9 +75,5 @@ void trunkLidTask()
             trunkLidLight.setMaxBrightness(255);
             trunkLidLight.toggle();
         }
-    }
-    if (trunkLidLight.isOn())
-    {
-        sleepCtrl.resetSleepTimer();
     }
 }
