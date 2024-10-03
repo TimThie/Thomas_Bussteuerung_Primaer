@@ -4,7 +4,7 @@
 
 void setup()
 {
-  // Serial.begin(9600);
+  pinMode(SLEEPLED_PIN, OUTPUT);
 }
 
 void loop()
