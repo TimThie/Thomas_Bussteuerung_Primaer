@@ -28,12 +28,14 @@ public:
 
     DrvLED(uint8_t gpio);
     void setConfig(fadeMode fadeInMode, uint32_t fadeInTime, fadeMode fadeOutMode, uint32_t fadeOutTime);
-    void on();
-    void off();
+    void turnOn();
+    void turnOff();
     void toggle();
     void setMaxBrightness(uint8_t maxBrightness);
     bool isOn();
     bool isOff();
+    void update();
+    uint8_t getLedState();
 
 private:
     enum ledState

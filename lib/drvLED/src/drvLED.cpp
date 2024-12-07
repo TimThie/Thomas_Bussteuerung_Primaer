@@ -16,87 +16,78 @@ void DrvLED::setConfig(fadeMode fadeInMode, uint32_t fadeInTime, fadeMode fadeOu
     this->config.maxBrightnessLevel = MAX_BRIGHTNESS_LEVEL;
 }
 
-void DrvLED::on()
+void DrvLED::turnOn()
 {
-    bool err = false;
-    uint32_t fadeTimer = millis();
     switch (this->config.fadeInMode)
     {
     case noFading:
         analogWrite(this->m_pin, this->config.maxBrightnessLevel);
+        this->ledState = LED_ON;
         break;
     case linear:
-        this->ledState = LED_RISING;
 
-        while (this->brightness < this->config.maxBrightnessLevel)
+        if (this->brightness < this->config.maxBrightnessLevel)
         {
-            if (millis() - fadeTimer >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1)))
+            this->ledState = LED_RISING;
+            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1)))
             {
                 this->brightness++;
                 analogWrite(this->m_pin, this->brightness);
             }
         }
+        else
+        {
+            this->ledState = LED_ON;
+        }
         break;
     default:
-        err = true;
         break;
-    }
-
-    if (!err)
-    {
-        this->ledState = LED_ON;
     }
 }
 
-void DrvLED::off()
+void DrvLED::turnOff()
 {
-    bool err = false;
     uint8_t fadeOutCounter = 1;
-    uint32_t fadeTimer = millis();
     switch (this->config.fadeOutMode)
     {
     case noFading:
         analogWrite(this->m_pin, LOW);
+        this->ledState = LED_OFF;
         break;
     case linear:
-        this->ledState = LED_FALLING;
-
-        while (this->brightness > LOW)
+        if (this->brightness > LOW)
         {
-            if (millis() - fadeTimer >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * (fadeOutCounter + 1))) // Hier funzt was noch nicht !!!
+            this->ledState = LED_FALLING;
+            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * (fadeOutCounter + 1)))
             {
                 this->brightness--;
                 fadeOutCounter++;
                 analogWrite(this->m_pin, this->brightness);
             }
         }
+        else
+        {
+            this->ledState = LED_OFF;
+        }
         break;
 
     default:
-        err = true;
         break;
-    }
-
-    if (!err)
-    {
-        this->ledState = LED_OFF;
     }
 }
 
 void DrvLED::toggle()
 {
-    if (!(this->ledState > LED_ON))
+
+    if (this->ledState == LED_ON || this->ledState == LED_FALLING)
     {
-        if (this->ledState == LED_ON)
-        {
-            off();
-        }
-        else
-        {
-            on();
-        }
-        this->lastToggleMillis = millis();
+        turnOff();
     }
+    else
+    {
+        turnOn();
+    }
+    this->lastToggleMillis = millis();
 }
 
 void DrvLED::setMaxBrightness(uint8_t maxBrightness)
@@ -120,4 +111,26 @@ bool DrvLED::isOff()
         return true;
     }
     return false;
+}
+
+void DrvLED::update()
+{
+    switch (this->ledState)
+    {
+    case LED_FALLING:
+        turnOff();
+        break;
+
+    case LED_RISING:
+        turnOn();
+        break;
+
+    default:
+        break;
+    }
+}
+
+uint8_t DrvLED::getLedState()
+{
+    return this->ledState;
 }
