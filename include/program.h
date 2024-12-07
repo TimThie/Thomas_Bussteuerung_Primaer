@@ -7,7 +7,7 @@
 #include "drvButton.h"
 #include "appTemperature.h"
 
-#define DEBUG 1
+#define DEBUG 0
 #define SLEEP_TIMER_MS 5000
 
 #if (DEBUG == 1)
