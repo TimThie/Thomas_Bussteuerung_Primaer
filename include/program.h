@@ -7,12 +7,7 @@
 #include "drvButton.h"
 #include "appTemperature.h"
 
-#define DEBUG 0
 #define SLEEP_TIMER_MS 5000
-
-#if (DEBUG == 1)
-#define DEBUG_MESSAGE_TIME_MS 1000
-#endif
 
 void program();
 void sleepTask();
