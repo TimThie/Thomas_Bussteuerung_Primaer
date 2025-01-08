@@ -18,17 +18,20 @@ void DrvLED::setConfig(fadeMode fadeInMode, uint32_t fadeInTime, fadeMode fadeOu
 
 void DrvLED::turnOn()
 {
+    // Switch-case to handle different fade-in modes
     switch (this->config.fadeInMode)
     {
     case noFading:
+        // No fading, set LED to max brightness immediately
         analogWrite(this->m_pin, this->config.maxBrightnessLevel);
         this->ledState = LED_ON;
         break;
     case linear:
-
+        // Linear fading mode
         if (this->brightness < this->config.maxBrightnessLevel)
         {
             this->ledState = LED_RISING;
+            // Check if it's time to increase brightness
             if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeInTime / MAX_BRIGHTNESS_LEVEL * (this->brightness + 1)))
             {
                 this->brightness++;
@@ -41,37 +44,50 @@ void DrvLED::turnOn()
         }
         break;
     default:
+// Handle unexpected fadeInMode
+#if DEBUG == 1
+        Serial.println("Error: Unknown fadeInMode");
+#endif
         break;
     }
 }
 
 void DrvLED::turnOff()
 {
+    // Variable to track fade-out progress
     uint8_t fadeOutCounter = 1;
+    // Switch-case to handle different fade-out modes
     switch (this->config.fadeOutMode)
     {
     case noFading:
+        // No fading, turn off LED immediately
         analogWrite(this->m_pin, LOW);
         this->ledState = LED_OFF;
         break;
     case linear:
-        if (this->brightness > LOW)
+        // Linear fading mode
+        if (this->brightness > 0)
         {
             this->ledState = LED_FALLING;
-            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * (fadeOutCounter + 1)))
+            // Check if it's time to decrease brightness
+            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * fadeOutCounter))
             {
                 this->brightness--;
-                fadeOutCounter++;
                 analogWrite(this->m_pin, this->brightness);
+                fadeOutCounter++;
             }
         }
         else
         {
+            analogWrite(this->m_pin, LOW);
             this->ledState = LED_OFF;
         }
         break;
-
     default:
+// Handle unexpected fadeOutMode
+#if DEBUG == 1
+        Serial.println("Error: Unknown fadeOutMode");
+#endif
         break;
     }
 }
@@ -79,7 +95,7 @@ void DrvLED::turnOff()
 void DrvLED::toggle()
 {
 
-    if (this->ledState == LED_ON || this->ledState == LED_FALLING)
+    if (this->ledState == LED_ON || this->ledState == LED_RISING)
     {
         turnOff();
     }
