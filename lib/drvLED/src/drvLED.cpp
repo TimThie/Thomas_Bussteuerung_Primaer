@@ -54,8 +54,6 @@ void DrvLED::turnOn()
 
 void DrvLED::turnOff()
 {
-    // Variable to track fade-out progress
-    uint8_t fadeOutCounter = 1;
     // Switch-case to handle different fade-out modes
     switch (this->config.fadeOutMode)
     {
@@ -70,11 +68,11 @@ void DrvLED::turnOff()
         {
             this->ledState = LED_FALLING;
             // Check if it's time to decrease brightness
-            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeOutTime / MAX_BRIGHTNESS_LEVEL * fadeOutCounter))
+            if (millis() - this->lastToggleMillis >= (uint32_t)(this->config.fadeOutTime / 2 / MAX_BRIGHTNESS_LEVEL))
             {
                 this->brightness--;
                 analogWrite(this->m_pin, this->brightness);
-                fadeOutCounter++;
+                this->lastToggleMillis = millis(); // Reset the last toggle time
             }
         }
         else
