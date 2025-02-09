@@ -5,8 +5,8 @@
 #include <Bounce2.h>
 
 // Debounce time in milliseconds
-#define DEBOUNCE_TIME 25
-#define PRESS_LONG_DURATION_MS 1000 * 8
+#define DEBOUNCE_TIME 20
+#define PRESS_LONG_DURATION_MS 1000
 
 class DrvButton
 {

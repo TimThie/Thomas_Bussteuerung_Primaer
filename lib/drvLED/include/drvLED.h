@@ -2,8 +2,8 @@
 #define DRVLED_H
 #include <Arduino.h>
 
-#define DEFAULT_FADE_IN_TIME 1000 * 8
-#define DEFAULT_FADE_OUT_TIME 1000 * 8
+#define DEFAULT_FADE_IN_TIME 1000
+#define DEFAULT_FADE_OUT_TIME 1000
 
 #define MAX_BRIGHTNESS_LEVEL 255
 
